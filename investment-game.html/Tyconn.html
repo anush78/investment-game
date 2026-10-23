@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Investment & Dealership Tycoon</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #161f30;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-gold: #eab308;
+            --button-grad: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 950px;
+            background-color: #0f172a;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background-color: #020617;
+            padding: 12px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: #1e293b;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background-color: rgba(255,255,255,0.03);
+        }
+
+        .tab-btn.active {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+            background-color: #0f172a;
+        }
+
+        .panel {
+            display: none;
+            padding: 24px;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+
+        .retro-invest-box {
+            background: #e2e8f0;
+            color: #0f172a;
+            border: 3px solid #64748b;
+            border-radius: 6px;
+            padding: 20px;
+            font-family: 'Times New Roman', Times, serif;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .retro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #94a3b8;
+            padding-bottom: 10px;
+        }
+
+        .retro-title {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .retro-select {
+            padding: 4px 8px;
+            font-size: 1rem;
+            border: 1px solid #475569;
+        }
+
+        .retro-controls {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .retro-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .retro-btn {
+            background: linear-gradient(180deg, #f1f5f9 0%, #cbd5e1 100%);
+            border: 2px solid #475569;
+            border-radius: 4px;
+            padding: 6px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 1px 1px 0px #000;
+            font-family: inherit;
+        }
+
+        .retro-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: none;
+        }
+
+        .retro-info-text {
+            font-size: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .retro-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+
+        .retro-table th, .retro-table td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        .retro-table th {
+            border-bottom: 2px solid #0f172a;
+        }
+
+        .retro-table tr:nth-child(even) { background-color: #cbd5e1; }
+        .retro-table tr:nth-child(odd) { background-color: #e2e8f0; }
+
+        .retro-action-btn {
+            padding: 2px 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .retro-footer {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 2px solid #94a3b8;
+            padding-top: 10px;
+        }
+
+        .dealership-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .car-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .car-image {
+            width: 100%;
+            height: 120px;
+            background-color: #0f172a;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .car-name { font-size: 1.2rem; font-weight: bold; }
+        .car-stats { font-size: 0.9rem; color: var(--text-muted); }
+
+        .action-btn {
+            background: var(--button-grad);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+        .action-btn:disabled { background: #475569; cursor: not-allowed; }
+
+        .casino-box {
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .roulette-wheel {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 8px solid var(--accent-gold);
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: radial-gradient(circle, #020617 0%, #1e293b 100%);
+            transition: transform 3s cubic-bezier(0.15, 0.9, 0.15, 1);
+        }
+
+        .roulette-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .input-group input, .input-group select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #0f172a;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .pnl-green { color: #16a34a; font-weight: bold; }
+        .pnl-red { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="terminal-header">
+            <div>&gt; Lifetime investment revenue report: <span id="lifetime-report">$-269,445</span></div>
+            <div>STATUS: ONLINE</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('investments')">📈 Börse / Investments</button>
+            <button class="tab-btn" onclick="switchTab('dealership')">🏎️ Car Dealership Tycoon</button>
+            <button class="tab-btn" onclick="switchTab('roulette')">🎰 Casino Roulette</button>
+        </div>
+
+        <div style="padding: 20px 24px 0 24px;">
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="label">Bargeld (Cash)</div>
+                    <div class="value" id="global-cash">$15</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Aktien-Wert</div>
+                    <div class="value" id="global-stocks">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Autohaus Einkommen</div>
+                    <div class="value" id="global-passive">$0/s</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 1: INVESTMENTS -->
+        <div id="investments" class="panel active">
+            <div class="retro-invest-box">
+                <div class="retro-header">
+                    <div class="retro-title">Investments</div>
+                    <select class="retro-select" id="risk-select">
+                        <option value="low">Low Risk</option>
+                        <option value="high" selected>High Risk</option>
+                    </select>
+                </div>
+
+                <div class="retro-controls">
+                    <div class="retro-btn-group">
+                        <button class="retro-btn" onclick="depositMoney()">Deposit</button>
+                        <button class="retro-btn" onclick="withdrawMoney()">Withdraw</button>
+                    </div>
+                    <div class="retro-info-text">
+                        Cash: $<span id="retro-cash">15</span><br>
+                        Stocks: $<span id="retro-stocks">0</span><br>
+                        <b>Total: $<span id="retro-total">15</span></b>
+                    </div>
+                </div>
+
+                <table class="retro-table">
+                    <thead>
+                        <tr>
+                            <th>Stock</th>
+                            <th>Amount</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>P/L</th>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-table-body"></tbody>
+                </table>
+
+                <div class="retro-footer">
+                    <div>
+                        <button class="retro-btn" onclick="upgradeEngine()">Upgrade Engine</button>
+                        <span style="font-size: 1.2rem; margin-left: 10px;">Level: <span id="engine-level">1</span></span>
+                    </div>
+                    <button class="retro-btn" onclick="resetGame()" style="background: #fca5a5; color: #7f1d1d;">Spielstand zurücksetzen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 2: DEALERSHIP -->
+        <div id="dealership" class="panel">
+            <h2 style="margin-bottom: 15px;">Autohaus Erweitern</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Kaufe Autos für deinen Showroom für automatisches Passiv-Einkommen.</p>
+            <div class="dealership-grid" id="car-grid"></div>
+        </div>
+
+        <!-- PANEL 3: ROULETTE -->
+        <div id="roulette" class="panel">
+            <div class="casino-box">
+                <h2>Roulette Tisch</h2>
+                <p style="color: var(--text-muted); margin-top: 5px;">Verdopple dein Geld oder verliere alles!</p>
+                <div class="roulette-wheel" id="wheel">?</div>
+                <div class="roulette-inputs">
+                    <div class="input-group">
+                        <input type="number" id="bet-amount" placeholder="Einsatz ($)" min="1" value="10">
+                        <select id="bet-type">
+                            <option value="red">Rot (x2)</option>
+                            <option value="black">Schwarz (x2)</option>
+                            <option value="green">Grün - 0 (x14)</option>
+                        </select>
+                    </div>
+                    <button class="action-btn" id="spin-btn" onclick="spinRoulette()">Drehen & Setzen</button>
+                </div>
+                <div id="roulette-result" style="margin-top: 15px; font-weight: bold;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            cash: 15,
+            lifetimePL: -269445,
+            engineLevel: 1,
+            stocks: [
+                { symbol: 'VAA', amount: 0, buyPrice: 56, currentPrice: 56 },
+                { symbol: 'LRX', amount: 0, buyPrice: 56, currentPrice: 56 },
+                { symbol: 'IQM', amount: 0, buyPrice: 12, currentPrice: 12 }
+            ],
+            cars: [
+                { id: 1, name: 'Gebrauchter Kleinwagen', icon: '🚗', price: 50, income: 2, owned: 0 },
+                { id: 2, name: 'Sport Limousine', icon: '🚘', price: 300, income: 15, owned: 0 },
+                { id: 3, name: 'Luxus SUV', icon: '🚙', price: 1500, income: 80, owned: 0 },
+                { id: 4, name: 'Hypercar Super-Sport', icon: '🏎️', price: 10000, income: 600, owned: 0 }
+            ]
+        };
+
+        function loadGame() {
+            let saved = localStorage.getItem('tycoon_savegame');
+            if (saved) {
+                try {
+                    let parsed = JSON.parse(saved);
+                    gameState = {...gameState, ...parsed};
+                } catch(e) { console.error("Fehler beim Laden"); }
+            }
+        }
+
+        function saveGame() {
+            localStorage.setItem('tycoon_savegame', JSON.stringify(gameState));
+        }
+
+        function resetGame() {
+            if (confirm("Möchtest du wirklich deinen gesamten Fortschritt zurücksetzen?")) {
+                localStorage.removeItem('tycoon_savegame');
+                location.reload();
+            }
+        }
+
+        loadGame();
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function updateUI() {
+            let stockTotal = gameState.stocks.reduce((sum, s) => sum + (s.amount * s.currentPrice), 0);
+            let totalValue = gameState.cash + stockTotal;
+            let passiveIncome = gameState.cars.reduce((sum, c) => sum + (c.owned * c.income), 0);
+
+            document.getElementById('global-cash').innerText = '$' + gameState.cash.toLocaleString();
+            document.getElementById('global-stocks').innerText = '$' + stockTotal.toLocaleString();
+            document.getElementById('global-passive').innerText = '$' + passiveIncome.toLocaleString() + '/s';
+            
+            let pnlSign = gameState.lifetimePL >= 0 ? '+$' : '-$';
+            document.getElementById('lifetime-report').innerText = pnlSign + Math.abs(gameState.lifetimePL).toLocaleString();
+
+            document.getElementById('retro-cash').innerText = gameState.cash.toLocaleString();
+            document.getElementById('retro-stocks').innerText = stockTotal.toLocaleString();
+            document.getElementById('retro-total').innerText = totalValue.toLocaleString();
+            document.getElementById('engine-level').innerText = gameState.engineLevel;
+
+            let tbody = document.getElementById('stock-table-body');
+            tbody.innerHTML = '';
+            gameState.stocks.forEach((stock, index) => {
+                let total = stock.amount * stock.currentPrice;
+                let pl = (stock.currentPrice - stock.buyPrice) * stock.amount;
+                let plClass = pl >= 0 ? 'pnl-green' : 'pnl-red';
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${stock.symbol}</b></td>
+                    <td>${stock.amount.toLocaleString()}</td>
+                    <td>${stock.currentPrice}</td>
+                    <td>${total.toLocaleString()}</td>
+                    <td class="${plClass}">${pl.toLocaleString()}</td>
+                    <td>
+                        <button class="retro-action-btn" onclick="buyStock(${index})">Kaufen</button>
+                        <button class="retro-action-btn" onclick="sellStock(${index})">Verkaufen</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            let carGrid = document.getElementById('car-grid');
+            carGrid.innerHTML = '';
+            gameState.cars.forEach((car) => {
+                let card = document.createElement('div');
+                card.className = 'car-card';
+                card.innerHTML = `
+                    <div class="car-image">${car.icon}</div>
+                    <div class="car-name">${car.name}</div>
+                    <div class="car-stats">
+                        Einkommen: +$${car.income}/s<br>
+                        Im Besitz: <b>${car.owned}</b>
+                    </div>
+                    <button class="action-btn" onclick="buyCar(${car.id})" ${gameState.cash < car.price ? 'disabled' : ''}>
+                        Kaufen ($${car.price.toLocaleString()})
+                    </button>
+                `;
+                carGrid.appendChild(card);
+            });
+
+            saveGame();
+        }
+
+        function buyStock(index) {
+            let stock = gameState.stocks[index];
+            if (gameState.cash >= stock.currentPrice) {
+                gameState.cash -= stock.currentPrice;
+                stock.amount++;
+                updateUI();
+            }
+        }
+
+        function sellStock(index) {
+            let stock = gameState.stocks[index];
+            if (stock.amount > 0) {
+                let pl = stock.currentPrice - stock.buyPrice;
+                gameState.cash += stock.currentPrice;
+                gameState.lifetimePL += pl;
+                stock.amount--;
+                updateUI();
+            }
+        }
+
+        function depositMoney() {
+            gameState.cash += 50;
+            updateUI();
+        }
+
+        function withdrawMoney() {
+            if (gameState.cash >= 50) {
+                gameState.cash -= 50;
+                updateUI();
+            }
+        }
+
+        function upgradeEngine() {
+            let cost = gameState.engineLevel * 100;
+            if (gameState.cash >= cost) {
+                gameState.cash -= cost;
+                gameState.engineLevel++;
+                updateUI();
+            }
+        }
+
+        setInterval(() => {
+            let risk = document.getElementById('risk-select').value;
+            let volatility = risk === 'high' ? 0.15 : 0.05;
+
+            gameState.stocks.forEach(stock => {
+                let changePercent = (Math.random() - 0.49) * volatility;
+                let newPrice = Math.round(stock.currentPrice * (1 + changePercent));
+                stock.currentPrice = Math.max(1, newPrice);
+            });
+
+            updateUI();
+        }, 2000);
+
+        setInterval(() => {
+            let passiveIncome = gameState.cars.reduce((sum, c) => sum + (c.owned * c.income), 0);
+            if (passiveIncome > 0) {
+                gameState.cash += passiveIncome;
+                updateUI();
+            }
+        }, 1000);
+
+        function buyCar(id) {
+            let car = gameState.cars.find(c => c.id === id);
+            if (car && gameState.cash >= car.price) {
+                gameState.cash -= car.price;
+                car.owned++;
+                car.price = Math.round(car.price * 1.2);
+                updateUI();
+            }
+        }
+
+        function spinRoulette() {
+            let betInput = document.getElementById('bet-amount');
+            let bet = parseInt(betInput.value);
+            let betType = document.getElementById('bet-type').value;
+            let resultDiv = document.getElementById('roulette-result');
+            let wheel = document.getElementById('wheel');
+
+            if (isNaN(bet) || bet <= 0 || bet > gameState.cash) {
+                resultDiv.innerText = "Ungültiger Einsatz!";
+                resultDiv.style.color = "var(--accent-red)";
+                return;
+            }
+
+            gameState.cash -= bet;
+            updateUI();
+
+            let number = Math.floor(Math.random() * 37);
+            wheel.style.transform = `rotate(${1440 + number * 10}deg)`;
+            
+            setTimeout(() => {
+                let color = 'black';
+                if (number === 0) color = 'green';
+                else if ([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(number)) color = 'red';
+
+                wheel.innerText = number;
+
+                let won = false;
+                let payout = 0;
+
+                if (betType === color) {
+                    won = true;
+                    payout = betType === 'green' ? bet * 14 : bet * 2;
+                }
+
+                if (won) {
+                    gameState.cash += payout;
+                    resultDiv.innerText = `Gewonnen! Zahl ${number} (${color.toUpperCase()}). +$${payout}`;
+                    resultDiv.style.color = "var(--accent-green)";
+                } else {
+                    resultDiv.innerText = `Verloren! Zahl ${number} (${color.toUpperCase()}). -$${bet}`;
+                    resultDiv.style.color = "var(--accent-red)";
+                }
+
+                updateUI();
+            }, 1000);
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
